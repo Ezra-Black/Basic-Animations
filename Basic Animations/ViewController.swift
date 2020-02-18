@@ -10,7 +10,11 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    //MARK: - Properties
+    
     var label: UILabel!
+    
+    //MARK: - View Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,10 +30,11 @@ class ViewController: UIViewController {
     }
     
     
-    func configureLabel() {
+    private func configureLabel() {
         //all views are all rectangles and positioned from upper left corner of view sized with width and height
         label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
         label.translatesAutoresizingMaskIntoConstraints = false
+        //constrain the width to the heighth. to ensure to make sure it stays a square even in the case of animation
         label.widthAnchor.constraint(equalTo: label.heightAnchor).isActive = true
         view.addSubview(label)
         label.text = "🧠"
@@ -40,7 +45,7 @@ class ViewController: UIViewController {
         label.layer.cornerRadius = 12
     }
     
-    func configureButtons() {
+    private func configureButtons() {
         let rotateButton = UIButton(type: .system)
         rotateButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(rotateButton)
@@ -72,7 +77,7 @@ class ViewController: UIViewController {
         anticipationButton.addTarget(self, action: #selector(anticipationButtonTapped), for: .touchUpInside)
         
         
-        
+        //MARK: - StackView
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stackView)
@@ -116,6 +121,7 @@ class ViewController: UIViewController {
             //it runs ignore the bool
         }) { (_) in
             UIView.animate(withDuration: 2.0) {
+                //returns it back to its original identity/animation
                 self.label.transform = .identity
             }
         }
@@ -131,15 +137,12 @@ class ViewController: UIViewController {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.25) {
                 self.label.transform = CGAffineTransform(rotationAngle: CGFloat.pi/4)
             }
-            
             UIView.addKeyframe(withRelativeStartTime: 0.25, relativeDuration: 0.25) {
                 self.label.transform = .identity
             }
-            
             UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.25) {
                 self.label.center = CGPoint(x: self.view.center.x, y: self.view.center.y - 50)
             }
-            
             UIView.addKeyframe(withRelativeStartTime: 0.75, relativeDuration: 0.25) {
                 self.label.center = self.view.center
             }
@@ -150,8 +153,7 @@ class ViewController: UIViewController {
         
         label.center = CGPoint(x: view.center.x, y: -label.bounds.size.height)
         
-        UIView.animateKeyframes(withDuration: 1.5, delay: 0, options: [], animations: {
-            //keyframes
+        let animationBlock = {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.4) {
                 self.label.center = self.view.center
             }
@@ -167,12 +169,35 @@ class ViewController: UIViewController {
             UIView.addKeyframe(withRelativeStartTime: 0.85, relativeDuration: 0.15) {
                 self.label.transform = .identity
             }
-        }, completion: nil)
+        }
+        UIView.animateKeyframes(withDuration: 2.9, delay: 0, options: [], animations: animationBlock, completion: nil)
+        
+        //this is dont with the completion handler handling ALL of the keyframes 👆 this is doing it at the bottom and giving a closure at the end to finish the animation 👇
+        
+//        UIView.animateKeyframes(withDuration: 1.5, delay: 0, options: [], animations: {
+//            //keyframes
+//
+//            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.4) {
+//                self.label.center = self.view.center
+//            }
+//            UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.2) {
+//                self.label.transform = CGAffineTransform(scaleX: 1.7, y: 0.6)
+//            }
+//            UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.2) {
+//                self.label.transform = CGAffineTransform(scaleX: 0.6, y: 1.7)
+//            }
+//            UIView.addKeyframe(withRelativeStartTime: 0.7, relativeDuration: 0.15) {
+//                self.label.transform = CGAffineTransform(scaleX: 1.11, y: 0.9)
+//            }
+//            UIView.addKeyframe(withRelativeStartTime: 0.85, relativeDuration: 0.15) {
+//                self.label.transform = .identity
+//            }
+//        }, completion: nil)
     }
     
     @objc func anticipationButtonTapped() {
         let anticipationBlock = {
-            //ketframes
+            //keyframes
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1) {
                 self.label.transform = CGAffineTransform(rotationAngle: CGFloat.pi/16.0)
             }
